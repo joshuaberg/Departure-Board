@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+  <head>
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+
+    <!-- Bootstrap CSS -->
+    <link href="./static/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+    <title>Departure Board</title>
+
+    <!-- Add in css sheet -->
+    <link rel="stylesheet" href="./static/css/departure-board.css" />
+
+    <!-- Refresh every 10 min -->
+    <meta http-equiv="refresh" content="600"-->
+
+    <script>
+    function startTime() {
+      var today = new Date();
+      var h = today.getHours();
+      var m = today.getMinutes();
+      var s = today.getSeconds();
+      m = checkTime(m);
+      s = checkTime(s);
+
+      if (h > 12) {h = h - 12};
+      timeNow = h+":"+ m;
+
+      document.getElementById('time_h0').innerHTML = Math.floor(h / 10 % 10);
+      document.getElementById('time_h1').innerHTML = Math.floor(h % 10);h;
+      document.getElementById('time_m0').innerHTML = Math.floor(m / 10 % 10);
+      document.getElementById('time_m1').innerHTML = Math.floor(m % 10);
+
+      var t = setTimeout(startTime, 500);
+    }
+
+    function checkTime(i) {
+      if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
+      return i;
+    }
+    </script>
+
+
+  </head>
+
+
+  <body onload="startTime()">
+    <!-- Option 1: Bootstrap Bundle with Popper -->
+    <!--script src="js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script> -->
+      <div class="container-fluid">
+
+        <div class="departure-board">
+          <span class = "letter" >
+            <span class="text"> T </span>
+          </span>
+          <span class = "letter" >
+            <span class="text"> I </span>
+          </span>
+          <span class = "letter" >
+            <span class="text"> M </span>
+          </span>
+            <span class = "letter" >
+              <span class="text"> E </span>
+            </span>
+            <span class = "letter" >
+              <span class="text"> &nbsp </span>
+            </span>
+            <span class = "letter" >
+              <span class="text" id = 'time_h0'> </span>
+            </span>
+            <span class = "letter" >
+              <span class="text" id = 'time_h1'> </span>
+            </span>
+            <span class = "letter" >
+              <span class="text"> : </span>
+            </span>
+            <span class = "letter" >
+              <span class="text" id = 'time_m0'> </span>
+            </span>
+            <span class = "letter" >
+              <span class="text" id = 'time_m1'> </span>
+            </span>
+        </div>
+
+        <div id="test"></div>
+
+    </div>
+
+
+		<script src="./static/js/departure-board.js"></script>
+		<script>
+
+			var board = new DepartureBoard (document.getElementById ('test'), { rowCount: 16, letterCount: 40 });
+      let list1 = JSON.parse('{{ formatedSchedule | tojson }}');
+			board.setValue(list1);
+
+		</script>
+
+
+
+    <!-- Bottom Nav Bar -->
+    <div class="navbar navbar-inverse navbar-fixed-bottom justify-content-center">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="/">Departure Schedule </a>
+        </div>
+        <ul class="nav navbar-nav">
+          <li><a href="setup">Setup</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <p class="navbar-brand" href="#">Joshua Berg</p>
+        </ul>
+      </div>
+    </div>
+	</body>
+
+
+</html>
