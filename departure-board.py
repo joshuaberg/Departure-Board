@@ -6,6 +6,23 @@ import datetime
 
 app = Flask(__name__)
 
+global SCHEDULE
+
+#load schedule file at start.  No need to grab every refresh if schedule is static
+#could rewrite to pull the schedule dynamically if there is an API or similar with
+#dynamic data
+with open('sample_schedule.json') as file:
+    SCHEDULE = json.load(file)
+
+
+# TO DO
+#look at rewriting getschedule fuction to format output in same fuction
+#instead of passing indicies to another fuction
+#that way if a transit option has a dynamic way of getting the schedule, you
+#only have to pull the data 1x every refresh and not 2x
+
+
+
 @app.route('/')
 def main():
 
@@ -21,29 +38,28 @@ def getDepartures():
     #get current time in minutes + current day of the week
     now = datetime.datetime.now()
     h = now.hour
+    print(h)
     m = now.minute
+    print(m)
     timeNow = (h*60) + m
+    print(timeNow)
 
-    #print(time_now)
-    with open('sample_schedule.json') as file:
-        parsed_json = json.load(file)
-
-        #go through json data. Get the indices of the stops that are past the current time
-        #the thinking is if i convert the current time and the departure times to
-        #minutes since midnight.  ITs an eas comparison as i loop through the list
-        departure_indices = []
-        for i in range(len(parsed_json[ROUTE][STATION])):
-            time = parsed_json[ROUTE][STATION][i]['time']
-            if time[-2:] == "PM":
-                if int(time[0:2]) == 12:
-                    depTime = (int(time[0:2])*60) + (int(time[3:5]))
-                else:
-                    depTime = (int(time[0:2])*60) + (int(time[3:5])) + (12*60)
-            else:
+    #go through json data. Get the indices of the stops that are past the current time
+    #the thinking is if i convert the current time and the departure times to
+    #minutes since midnight.  Its an easy comparison as i loop through the list
+    departure_indices = []
+    for i in range(len(SCHEDULE[ROUTE][STATION])):
+        time = SCHEDULE[ROUTE][STATION][i]['time']
+        if time[-2:] == "PM":
+            if int(time[0:2]) == 12:
                 depTime = (int(time[0:2])*60) + (int(time[3:5]))
+            else:
+                depTime = ((int(time[0:2])+12)*60) + (int(time[3:5]))
+        else:
+            depTime = (int(time[0:2])*60) + (int(time[3:5]))
 
-            if depTime >= timeNow:
-                departure_indices.append(i)
+        if depTime >= timeNow:
+            departure_indices.append(i)
     return(departure_indices)
 
 def formatDepartures(indices):
@@ -52,14 +68,12 @@ def formatDepartures(indices):
 
     ROUTE = 'Route_1'
     STATION = 'Station_1'
-    with open('sample_schedule.json') as file:
-        parsed_json = json.load(file)
 
     departures = []
     for i in range(8):
         if i < len(indices):
-            time = parsed_json[ROUTE][STATION][i]['time']
-            transit_number = parsed_json[ROUTE][STATION][i]["Transit_Number"]
+            time = SCHEDULE[ROUTE][STATION][indices[i]]['time']
+            transit_number = SCHEDULE[ROUTE][STATION][indices[i]]["Transit_Number"]
             STATION = 'Station_1'
 
             text = '  ' + time + '  ' + STATION + '  ' + transit_number
